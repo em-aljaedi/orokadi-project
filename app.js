@@ -119,34 +119,33 @@ function updateCartIconBadge() {
 }
 
 // دالة إضافة منتج جديد من لوحة التحكم (مضافة هنا في النهاية)
+// دالة إضافة منتج جديد من لوحة التحكم (بالشكل الصحيح)
 function addNewProduct(event) {
-    event.preventDefault();
+    event.preventDefault();
 
-    const name = document.getElementById('product-name').value;
-    const price = parseFloat(document.getElementById('product-price').value);
-    const image = document.getElementById('product-image').value || 'images/logen.jpeg';
-    
-    // التقاط القسم المختار من القائمة المنسدلة في صفحة الأدمن
-    const category = document.getElementById('product-category').value; 
+    const name = document.getElementById('product-name').value;
+    const price = parseFloat(document.getElementById('product-price').value);
+    const image = document.getElementById('product-image').value || 'images/logen.jpeg';
+    
+    // التقاط القسم المختار من القائمة المنسدلة في صفحة الأدمن
+    const category = document.getElementById('product-category').value; 
 
-   let products = JSON.parse(localStorage.getItem('orokadi_products_v2')) || [];
-// ...
-localStorage.setItem('orokadi_products_v2', JSON.stringify(products));
-    const newProduct = {
-        id: Date.now(),
-        name: name,
-        price: price,
-        image: image,
-        category: category, // حفظ القسم باختيار الأدمن بدقة
-        status: 'available'
-    };
+    let products = JSON.parse(localStorage.getItem('orokadi_products_v2')) || [];
+    
+    const newProduct = {
+        id: Date.now(),
+        name: name,
+        price: price,
+        image: image,
+        category: category, // حفظ القسم باختيار الأدمن بدقة
+        status: 'available'
+    };
 
-    products.push(newProduct);
-    localStorage.setItem('orokadi_products', JSON.stringify(products));
+    products.push(newProduct);
+    
+    // الحفظ الصحيح في الـ v2 بعد إضافة المنتج لكي يظهر فوراً في الرئيسية
+    localStorage.setItem('orokadi_products_v2', JSON.stringify(products));
 
-    alert('تم إضافة المنتج بنجاح إلى القسم المحدد! 🌸');
-    location.reload();
+    alert('تم إضافة المنتج بنجاح إلى القسم المحدد! 🌸');
+    location.reload();
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    renderStoreProducts(); أرسلت لك الملف كامل عشان تتأكد إذا صح أو خطأ.
