@@ -119,34 +119,54 @@ function updateCartIconBadge() {
 }
 
 // دالة إضافة منتج جديد من لوحة التحكم (مضافة هنا في النهاية)
+// دالة إضافة منتج جديد من لوحة التحكم (محسنة وآمنة)
 function addNewProduct(event) {
     event.preventDefault();
 
-    const name = document.getElementById('product-name').value;
-    const price = parseFloat(document.getElementById('product-price').value);
-    const image = document.getElementById('product-image').value || 'images/logen.jpeg';
-    
-    // التقاط القسم المختار من القائمة المنسدلة في صفحة الأدمن
-    const category = document.getElementById('product-category').value; 
+    const nameEl = document.getElementById('product-name');
+    const priceEl = document.getElementById('product-price');
+    const imageEl = document.getElementById('product-image');
+    const categoryEl = document.getElementById('product-category');
 
-   let products = JSON.parse(localStorage.getItem('orokadi_products_v2')) || [];
-// ...
-localStorage.setItem('orokadi_products_v2', JSON.stringify(products));
+    if (!nameEl || !priceEl) {
+        alert('خطأ: تأكد من وجود حقول الاسم والسعر في الصفحة.');
+        return;
+    }
+
+    const name = nameEl.value.trim();
+    const price = parseFloat(priceEl.value) || 0;
+    
+    // التعامل الذكي مع مسار الصورة
+    let image = imageEl ? imageEl.value.trim() : '';
+    if (!image) {
+        image = 'images/logen.jpeg';
+    } else if (!image.startsWith('images/') && !image.startsWith('http')) {
+        image = 'images/' + image;
+    }
+
+    const category = categoryEl ? categoryEl.value : 'flowers';
+
+    // جلب المنتجات من النسخة المحدثة v2
+    let products = JSON.parse(localStorage.getItem('orokadi_products_v2')) || [];
+
     const newProduct = {
         id: Date.now(),
         name: name,
         price: price,
         image: image,
-        category: category, // حفظ القسم باختيار الأدمن بدقة
+        category: category,
         status: 'available'
     };
 
     products.push(newProduct);
+    
+    // الحفظ في النسخة v2 لضمان ظهورها فوراً
     localStorage.setItem('orokadi_products_v2', JSON.stringify(products));
 
     alert('تم إضافة المنتج بنجاح إلى القسم المحدد! 🌸');
     location.reload();
 }
+
 
 document.addEventListener('DOMContentLoaded', () => {
     renderStoreProducts();
