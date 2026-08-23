@@ -2,16 +2,15 @@ let currentCategory = 'all';
 
 // جلب المنتجات مع تصنيفها (الورد، الهدايا، الطاولات)
 function getProductsData() {
-    let products = JSON.parse(localStorage.getItem('orokadi_products'));
+    let products = JSON.parse(localStorage.getItem('orokadi_products_v2'));
     if (!products || products.length === 0) {
-       products = [
+        products = [
             { id: 1, name: 'باقة ورد حمراء كلاسيك', price: 180, discount: null, image: 'images/flowerwite.jpeg', status: 'available', category: 'flowers' },
             { id: 2, name: 'تنسيق زهور الكادي مع هدية', price: 250, discount: null, image: 'images/boxkinder.jpeg', status: 'available', category: 'gifts' },
             { id: 3, name: 'box flower', price: 60, discount: 40, image: 'images/flowerwite.jpeg', status: 'available', category: 'flowers' },
-            { id: 4, name: 'هدية شوكولاتة فاخرة', price: 200, discount: null, image: 'images/boxkinder.jpeg', status: 'available', category: 'gifts' }
-        
+            { id: 4, name: 'هدية شوكولاتة فاخرة', price: 200, discount: null, image: 'images/baner.jpeg', status: 'available', category: 'gifts' }
         ];
-        localStorage.setItem('orokadi_products', JSON.stringify(products));
+        localStorage.setItem('orokadi_products_v2', JSON.stringify(products));
     }
     return products;
 }
@@ -130,8 +129,9 @@ function addNewProduct(event) {
     // التقاط القسم المختار من القائمة المنسدلة في صفحة الأدمن
     const category = document.getElementById('product-category').value; 
 
-    let products = JSON.parse(localStorage.getItem('orokadi_products')) || [];
-    
+   let products = JSON.parse(localStorage.getItem('orokadi_products_v2')) || [];
+// ...
+localStorage.setItem('orokadi_products_v2', JSON.stringify(products));
     const newProduct = {
         id: Date.now(),
         name: name,
@@ -142,7 +142,7 @@ function addNewProduct(event) {
     };
 
     products.push(newProduct);
-    localStorage.setItem('orokadi_products', JSON.stringify(products));
+    localStorage.setItem('orokadi_products_v2', JSON.stringify(products));
 
     alert('تم إضافة المنتج بنجاح إلى القسم المحدد! 🌸');
     location.reload();
