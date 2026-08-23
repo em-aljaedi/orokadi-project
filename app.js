@@ -4,11 +4,12 @@ let currentCategory = 'all';
 function getProductsData() {
     let products = JSON.parse(localStorage.getItem('orokadi_products'));
     if (!products || products.length === 0) {
-        products = [
-            { id: 1, name: 'باقة ورد حمراء كلاسيك', price: 180, discount: null, image: 'images/logen.jpeg', status: 'available', category: 'flowers' },
+       products = [
+            { id: 1, name: 'باقة ورد حمراء كلاسيك', price: 180, discount: null, image: 'images/flowerwite.jpeg', status: 'available', category: 'flowers' },
             { id: 2, name: 'تنسيق زهور الكادي مع هدية', price: 250, discount: null, image: 'images/boxkinder.jpeg', status: 'available', category: 'gifts' },
-            { id: 3, name: 'box flower', price: 60, discount: 40, image: 'images/logen.jpeg', status: 'available', category: 'flowers' },
-            { id: 4, name: 'هدية شوكولاتة فاخرة', price: 200, discount: null, image: 'images/baner.jpeg', status: 'available', category: 'gifts' }
+            { id: 3, name: 'box flower', price: 60, discount: 40, image: 'images/flowerwite.jpeg', status: 'available', category: 'flowers' },
+            { id: 4, name: 'هدية شوكولاتة فاخرة', price: 200, discount: null, image: 'images/boxkinder.jpeg', status: 'available', category: 'gifts' }
+        
         ];
         localStorage.setItem('orokadi_products', JSON.stringify(products));
     }
