@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سلة التسوق - أورو كادي</title>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; }
+        body { background-color: #faf7f8; color: #333; min-height: 100vh; padding-bottom: 50px; }
+
+        /* الهيدر العلوي */
+        header { background: #ffffff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); border-bottom: 2px solid #8b1832; }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #8b1832; font-weight: bold; font-size: 18px; }
+        .logo img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .back-link { text-decoration: none; color: #8b1832; font-weight: bold; font-size: 14px; }
+
+        /* الحاوية الرئيسية بطريقة الترتيب الرأسي */
+        .container { max-width: 700px; margin: 30px auto; padding: 0 20px; }
+
+        .cart-card { background: #fff; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+
+        .section-title { font-size: 17px; font-weight: bold; color: #8b1832; margin-bottom: 18px; border-bottom: 1.5px solid #f0f0f0; padding-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+
+        /* قائمة المنتجات المضافة */
+        .cart-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px dashed #eee; }
+        .cart-item:last-child { border-bottom: none; }
+        .cart-item-info { display: flex; align-items: center; gap: 14px; }
+        .cart-item-img { width: 65px; height: 65px; border-radius: 10px; object-fit: cover; border: 1px solid #eee; }
+        .cart-item-details h4 { font-size: 15px; color: #333; margin-bottom: 4px; }
+        .cart-item-details p { font-size: 14px; color: #8b1832; font-weight: bold; }
+
+        .btn-remove { background: #fde8e8; color: #e11d48; border: none; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.2s; }
+        .btn-remove:hover { background: #e11d48; color: #fff; }
+
+        /* الإجمالي */
+        .total-box { background: #fff5f7; border: 1px solid #f8d7da; padding: 14px; border-radius: 10px; margin: 20px 0 30px 0; text-align: center; font-size: 17px; font-weight: bold; color: #8b1832; }
+
+        /* نموذج الإدخال */
+        .form-grid { display: flex; flex-direction: column; gap: 16px; margin-bottom: 25px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group label { font-size: 13px; font-weight: bold; color: #444; }
+        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 1.5px solid #ddd; border-radius: 10px; outline: none; font-size: 14px; transition: 0.2s; }
+        .form-group input:focus, .form-group textarea:focus { border-color: #8b1832; }
+
+        /* زر تأكيد الطلب العنابي بنفس لون الهوية */
+        .btn-checkout { width: 100%; background-color: #8b1832; color: #ffffff; border: none; padding: 14px; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: 0.2s; box-shadow: 0 4px 12px rgba(139, 24, 50, 0.25); }
+        .btn-checkout:hover { background-color: #6e1327; }
+        .btn-checkout svg { width: 22px; height: 22px; fill: currentColor; }
+
+        .empty-cart { text-align: center; padding: 40px 20px; color: #777; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="logo">
+            <img src="images/logen.jpeg" alt="أورو كادي" onerror="this.src='images/Logen.jpeg'">
+            <span>أورو كادي - OroKadi</span>
+        </a>
+        <a href="index.html" class="back-link">← العودة للمتجر</a>
+    </header>
+
+    <div class="container">
+        <div class="cart-card">
+            
+            <!-- 1. المنتجات المضافة -->
+            <div class="section-title">🛒 المنتجات المضافة</div>
+            <div id="cart-items-container"></div>
+            
+            <div id="cart-summary-area" style="display: none;">
+                <div class="total-box">
+                    الإجمالي: <span id="cart-total-price">0</span> ر.س
+                </div>
+
+                <!-- 2. تفاصيل الطلب والتوصيل -->
+                <div class="section-title" style="margin-top: 30px;">📝 تفاصيل الطلب والتوصيل</div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>الاسم الكامل *</label>
+                        <input type="text" id="cust-name" placeholder="أدخلي اسمكِ هنا" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>الموقع / عنوان التوصيل *</label>
+                        <input type="text" id="cust-location" placeholder="مثال: صنعاء - حي الأصبحي / أو مشاركة الموقع" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>نص كارت الإهداء (اختياري) 💌</label>
+                        <textarea id="card-msg" rows="3" placeholder="اكتبي العبارة المطلوبة على كارت الهدايا..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>تاريخ ووقت التوصيل المطلوب 📅</label>
+                        <input type="datetime-local" id="delivery-date">
+                    </div>
+                </div>
+
+                <!-- 3. زر التأكيد بالعنابي وبأيقونة الواتساب -->
+                <button class="btn-checkout" onclick="sendOrderToWhatsApp()">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984 0 1.756.459 3.47 1.33 4.982L2 22l5.178-1.332a9.953 9.953 0 0 0 4.834 1.256h.004c5.505 0 9.988-4.478 9.989-9.984 0-2.668-1.039-5.176-2.926-7.062A9.927 9.927 0 0 0 12.012 2zm5.72 13.627c-.242.684-1.397 1.304-1.92 1.371-.487.062-1.121.096-3.235-.776-2.705-1.115-4.445-3.874-4.58-4.053-.135-.18-1.094-1.458-1.094-2.78 0-1.322.697-1.972.945-2.239.248-.268.541-.335.722-.335.18 0 .36.002.518.009.167.008.391-.064.612.466.226.541.768 1.874.835 2.01.068.136.113.293.023.473-.09.18-.135.293-.27.451-.136.158-.286.352-.408.473-.136.135-.278.282-.12.553.158.271.704 1.16 1.512 1.88 1.04.927 1.918 1.214 2.189 1.349.271.135.429.113.587-.068.158-.18.677-.788.858-1.059.18-.271.36-.226.61-.135.248.09 1.58.745 1.85 1.879.271.135.451.271.518.384.068.113.068.654-.174 1.338z"/>
+                    </svg>
+                    <span>تأكيد الطلب عبر الواتساب</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function renderCartPage() {
+            const container = document.getElementById('cart-items-container');
+            const summaryArea = document.getElementById('cart-summary-area');
+            const totalElement = document.getElementById('cart-total-price');
+            let cart = JSON.parse(localStorage.getItem('orokadi_cart')) || [];
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-cart">
+                        <p style="font-size: 16px; margin-bottom: 12px; font-weight: bold;">السلة فارغة حالياً 🛒</p>
+                        <a href="index.html" style="color: #8b1832; font-weight: bold; text-decoration: none;">تصفحي المنتجات وأضيفي طلبيتكِ من هنا</a>
+                    </div>
+                `;
+                summaryArea.style.display = 'none';
+                return;
+            }
+
+            summaryArea.style.display = 'block';
+            let totalPrice = 0;
+
+            container.innerHTML = cart.map((item, index) => {
+                const itemPrice = item.discount || item.price;
+                totalPrice += itemPrice;
+
+                return `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <img src="${item.image}" class="cart-item-img" onerror="this.src='images/logen.jpeg'">
+                            <div class="cart-item-details">
+                                <h4>${item.name}</h4>
+                                <p>${itemPrice} ر.س</p>
+                            </div>
+                        </div>
+                        <button class="btn-remove" onclick="removeFromCart(${index})">حذف</button>
+                    </div>
+                `;
+            }).join('');
+
+            if (totalElement) totalElement.innerText = totalPrice;
+        }
+
+        function removeFromCart(index) {
+            let cart = JSON.parse(localStorage.getItem('orokadi_cart')) || [];
+            cart.splice(index, 1);
+            localStorage.setItem('orokadi_cart', JSON.stringify(cart));
+            renderCartPage();
+        }
+
+        function sendOrderToWhatsApp() {
+            let cart = JSON.parse(localStorage.getItem('orokadi_cart')) || [];
+            if (cart.length === 0) {
+                alert('السلة فارغة!');
+                return;
+            }
+
+            const name = document.getElementById('cust-name').value.trim();
+            const location = document.getElementById('cust-location').value.trim();
+            const cardMsg = document.getElementById('card-msg').value.trim();
+            const deliveryDate = document.getElementById('delivery-date').value;
+
+            if (!name || !location) {
+                alert('يرجى كتابة الاسم وعنوان التوصيل/الموقع لإتمام الطلب!');
+                return;
+            }
+
+            let itemsText = cart.map((item, i) => `${i + 1}. ${item.name} (${item.discount || item.price} ر.س)`).join('\n');
+            let totalPrice = cart.reduce((sum, item) => sum + (item.discount || item.price), 0);
+
+            let message = `مرحباً أورو كادي 🌸\n` +
+                          `أنا: *${name}*\n` +
+                          `📍 *الموقع/العنوان:* ${location}\n\n` +
+                          `📦 *أرغب في تأكيد الطلب التالي:*\n${itemsText}\n\n` +
+                          `💌 *الكتابة عبر كارت الإهداء:*\n${cardMsg ? cardMsg : 'بدون كارت إهداء'}\n\n` +
+                          `📅 *تاريخ ووقت التوصيل:* ${deliveryDate ? deliveryDate.replace('T', ' الوقت: ') : 'في أقرب وقت'}\n\n` +
+                          `💰 *الإجمالي النهائي:* ${totalPrice} ر.س`;
+
+            const storePhoneNumber = "967783596999"; // استبدلي برقم واتساب المتجر
+            window.open(`https://wa.me/967783596999?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        document.addEventListener('DOMContentLoaded', renderCartPage);
+    </script>
+</body>
+</html>

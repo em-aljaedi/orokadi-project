@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أورو كادي - OroKadi</title>
+    <link rel="icon" type="image/jpeg" href="images/logen.jpeg">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* تنسيق إضافي للفوتر والحسابات لضمان مظهر احترافي متناسق مع التصميم */
+        .site-footer {
+            background-color: #8b1832;
+            color: #ffffff;
+            padding: 30px 20px;
+            text-align: center;
+            margin-top: 50px;
+            border-top: 3px solid #6e1327;
+        }
+        .footer-container {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        .footer-socials {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 5px;
+        }
+        .social-icon-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .social-icon-link:hover {
+            background: #ffffff;
+            color: #8b1832;
+            transform: translateY(-3px);
+        }
+        .footer-text {
+            font-size: 13px;
+            opacity: 0.9;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            width: 100%;
+            padding-top: 15px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- الهيدر العلوي والأيقونات -->
+    <header class="navbar">
+        <div class="logo-container">
+            <div class="logo-circle">
+                <img src="images/logen.jpeg" alt="أورو كادي" class="logo-img">
+            </div>
+        </div>
+        <div class="nav-icons">
+            <button class="icon-btn" title="المفضلة" onclick="openPage('wishlist')">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8b1832" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+            <button class="icon-btn" title="تسجيل الدخول" onclick="window.location.href='login.html'">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8b1832" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </button>
+            <a href="cart.html" class="icon-btn" title="السلة" style="position: relative; display: inline-flex; align-items: center; justify-content: center; text-decoration: none;">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#8b1832" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+                <!-- عداد المنتجات فوق الأيقونة -->
+                <span id="cart-count" style="position: absolute; top: -6px; right: -8px; background: #d32f2f; color: white; border-radius: 50%; padding: 2px 5px; font-size: 10px; font-weight: bold; line-height: 1;">0</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- البانر المتحرك (السلايدر) -->
+    <section class="hero-slider">
+        <div class="slide active" style="background-image: url('images/BANER KADI.jpeg');"></div>
+        <div class="slide" style="background-image: url('images/baner.jpeg');"></div>
+        <div class="slide" style="background-image: url('images/banner.jpeg');"></div>
+        <div class="hero-overlay">
+            <button class="btn-shop">تسوق الآن</button>
+        </div>
+    </section>
+
+    <!-- الأقسام الرئيسية والبحث -->
+    <section class="main-categories">
+        <h2 class="section-title">أقسامنا الرئيسية</h2>
+        
+        <div class="search-bar">
+            <button class="search-btn">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#fff" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </button>
+            <input type="text" id="search-input" placeholder="ابحث هنا..." oninput="searchProducts()">
+        </div>
+
+        <div class="categories-grid">
+            <!-- قسم الورد -->
+            <div class="cat-card" onclick="filterProducts('flowers')">
+                <div class="cat-icon">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </div>
+                <div class="cat-info">
+                    <h3>الورد والزهور</h3>
+                    <p>باقات جوري طبيعي وتنسيقات مميزة</p>
+                </div>
+            </div>
+
+            <!-- قسم الهدايا -->
+            <div class="cat-card" onclick="filterProducts('gifts')">
+                <div class="cat-icon">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+                </div>
+                <div class="cat-info">
+                    <h3>الهدايا الفاخرة</h3>
+                    <p>بوكسات وشوكولاتة وعطور مميزة</p>
+                </div>
+            </div>
+
+            <!-- قسم حجز الطاولات -->
+            <div class="cat-card" onclick="filterProducts('tables')">
+                <div class="cat-icon">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <div class="cat-info">
+                    <h3>حجز الطاولات</h3>
+                    <p>تنسيق قاعات ومناسبات كاملة</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- الأكثر مبيعاً / شبكة المنتجات -->
+    <section class="best-sellers">
+        <h2 class="section-title" id="grid-title">الأكثر مبيعاً</h2>
+        <div class="products-grid" id="products-container">
+            <!-- المنتجات تتولد عبر app.js -->
+        </div>
+    </section>
+
+    <!-- الفوتر السفلي الجديد والمحترف -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <h3 style="font-size: 18px; font-weight: bold; margin: 0;">متجر أورو كادي - OroKadi</h3>
+            <p style="font-size: 13px; margin: 0; opacity: 0.9;">لمسات فاخرة من الزهور والهدايا لتخليد أجمل مناسباتكم اللحظية.</p>
+            
+            <!-- أيقونات التواصل الاجتماعي الحديثة -->
+            <div class="footer-socials">
+                <!-- إنستغرام -->
+                <a href="https://instagram.com/ORO_KADI" target="_blank" class="social-icon-link" title="إنستقرام">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+        </a>
+                <!-- سناب شات -->
+                <a href="https://snapchat.com" target="_blank" class="social-icon-link" title="سناب شات">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14c-2.76 0-5-2.24-5-5h2c0 1.65 1.35 3 3 3s3-1.35 3-3h2c0 2.76-2.24 5-5 5z"/></svg>
+                </a>
+                <!-- واتساب -->
+                <a href="https://wa.me/967783596999" target="_blank" class="social-icon-link" title="واتساب">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+            </svg>
+        </a>
+            </div>
+
+            <div class="footer-text">
+                جميع الحقوق محفوظة © 2026 - متجر أورو كادي
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
