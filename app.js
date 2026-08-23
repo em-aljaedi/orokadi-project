@@ -1,33 +1,71 @@
-let currentCategory = 'all';
+// Import Firebase SDK via CDN
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// جلب المنتجات مع تصنيفها (الورد، الهدايا، الطاولات)
-function getProductsData() {
-    let products = JSON.parse(localStorage.getItem('orokadi_products'));
-    if (!products || products.length === 0) {
-        products = [
-            { id: 1, name: 'باقة ورد حمراء كلاسيك', price: 180, discount: null, image: 'images/flowerwite.jpeg', status: 'available', category: 'flowers' },
-            { id: 2, name: 'تنسيق زهور الكادي مع هدية', price: 250, discount: null, image: 'images/boxkinder.jpeg', status: 'available', category: 'gifts' },
-            { id: 4, name: 'هدية شوكولاتة فاخرة', price: 200, discount: null, image: 'images/boxkinder.jpeg', status: 'available', category: 'gifts' }
-        ];
-        localStorage.setItem('orokadi_products', JSON.stringify(products));
+// إعدادات الربط الخاصة بكِ
+const firebaseConfig = {
+  apiKey: "AIzaSyDfEp9FAcU8f13YKZ-DZfzOQjEcgIi1Fq0",
+  authDomain: "orokadi-store-fe838.firebaseapp.com",
+  projectId: "orokadi-store-fe838",
+  storageBucket: "orokadi-store-fe838.firebasestorage.app",
+  messagingSenderId: "8253358848",
+  appId: "1:8253358848:web:3c2282634c8d1f252f69e5",
+  measurementId: "G-GQE2QY31KP"
+};
+
+// تهيئة فايربيس وقاعدة البيانات
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let currentCategory = 'all';
+let productsCache = []; // تخزين مؤقت للمنتجات المجلبة من السحابة
+
+// دالة لجلب المنتجات من سحابة فايربيس للجميع (للأدمن وللعملاء)
+async function fetchProductsFromFirebase() {
+    try {
+        const querySnapshot = await getDocs(collection(db, "products"));
+        productsCache = [];
+        querySnapshot.forEach((docSnap) => {
+            productsCache.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        // إذا كانت القاعدة فارغة تماماً، نضيف المنتجات الافتراضية لأول مرة
+        if (productsCache.length === 0) {
+            const defaultProducts = [
+                { name: 'باقة ورد حمراء كلاسيك', price: 180, discount: null, image: 'images/flowerwite.jpeg', status: 'available', category: 'flowers' },
+                { name: 'تنسيق زهور الكادي مع هدية', price: 250, discount: null, image: 'images/boxkinder.jpeg', status: 'available', category: 'gifts' },
+                { name: 'box flower', price: 60, discount: 40, image: 'images/flowerwite.jpeg', status: 'available', category: 'flowers' },
+                { name: 'هدية شوكولاتة فاخرة', price: 200, discount: null, image: 'images/baner.jpeg', status: 'available', category: 'gifts' }
+            ];
+            for (let p of defaultProducts) {
+                await addDoc(collection(db, "products"), p);
+            }
+            return fetchProductsFromFirebase(); // إعادة الجلب بعد الإضافة
+        }
+    } catch (e) {
+        console.error("Error fetching products from cloud: ", e);
     }
-    return products;
+    renderStoreProducts();
 }
 
-// دالة التصفية عند النقر على الأقسام في الأندكس
+function getProductsData() {
+    return productsCache;
+}
+
+// دالة التصفية حسب الأقسام
 function filterProducts(category) {
     currentCategory = category;
     renderStoreProducts();
 }
 
-// عرض المنتجات وتنسيق قسم حجز الطاولات عند النقر عليه
+// عرض المنتجات في الواجهة الرئيسية
 function renderStoreProducts(searchQuery = '') {
     const products = getProductsData();
     const container = document.getElementById('products-container');
     const titleElement = document.getElementById('grid-title');
     if (!container) return;
 
-    // إذا تم النقر على كرت "حجز الطاولات"
+    // قسم حجز الطاولات
     if (currentCategory === 'tables') {
         if (titleElement) titleElement.innerText = 'خدمة حجز وتنظيم الطاولات والمناسبات';
         container.innerHTML = `
@@ -42,14 +80,12 @@ function renderStoreProducts(searchQuery = '') {
         return;
     }
 
-    // تحديث عنوان القسم حسب الاختيار
     if (titleElement) {
         if (currentCategory === 'flowers') titleElement.innerText = 'قسم الورد والزهور';
         else if (currentCategory === 'gifts') titleElement.innerText = 'قسم الهدايا الفاخرة';
         else titleElement.innerText = 'الأكثر مبيعاً';
     }
 
-    // تصفية المنتجات حسب القسم والبحث
     let filtered = products.filter(p => {
         let matchCat = (currentCategory === 'all' || !p.category) ? true : p.category === currentCategory;
         let matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -70,7 +106,7 @@ function renderStoreProducts(searchQuery = '') {
 
         let actionHTML = isOut 
             ? `<button disabled style="width: 100%; padding: 10px; background-color: #d32f2f; color: #ffffff; border: none; border-radius: 8px; font-weight: bold; cursor: not-allowed; font-size: 13px; margin-top: 10px;">❌ نفدت الكمية</button>`
-            : `<button onclick="addToCart(${p.id})" style="width: 100%; padding: 10px; background-color: #8b1832; color: #ffffff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; margin-top: 10px; transition: 0.2s;">إضافة إلى السلة</button>`;
+            : `<button onclick="addToCart('${p.id}')" style="width: 100%; padding: 10px; background-color: #8b1832; color: #ffffff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; margin-top: 10px; transition: 0.2s;">إضافة إلى السلة</button>`;
 
         return `
             <div class="product-card" style="background: #fff; border-radius: 12px; padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; display: flex; flex-direction: column; justify-content: space-between; position: relative;">
@@ -88,13 +124,11 @@ function renderStoreProducts(searchQuery = '') {
     updateCartIconBadge();
 }
 
-// دالة البحث التفاعلي
 function searchProducts() {
     const inputVal = document.getElementById('search-input').value;
     renderStoreProducts(inputVal);
 }
 
-// إضافة منتج للسلة
 function addToCart(productId) {
     const products = getProductsData();
     const product = products.find(p => p.id === productId);
@@ -108,7 +142,6 @@ function addToCart(productId) {
     alert(`تمت إضافة "${product.name}" إلى السلة بنجاح! 🛒`);
 }
 
-// تحديث عداد السلة في الأيقونة العلوية
 function updateCartIconBadge() {
     let cart = JSON.parse(localStorage.getItem('orokadi_cart')) || [];
     const cartBadge = document.getElementById('cart-count');
@@ -117,35 +150,39 @@ function updateCartIconBadge() {
     }
 }
 
-// دالة إضافة منتج جديد من لوحة التحكم (مضافة هنا في النهاية)
-function addNewProduct(event) {
+// دالة إضافة منتج جديد من لوحة التحكم وحفظه في السحابة فوراً
+async function addNewProduct(event) {
     event.preventDefault();
 
     const name = document.getElementById('product-name').value;
     const price = parseFloat(document.getElementById('product-price').value);
-    const image = document.getElementById('product-image').value || 'images/logen.jpeg';
-    
-    // التقاط القسم المختار من القائمة المنسدلة في صفحة الأدمن
-    const category = document.getElementById('product-category').value; 
+    const image = document.getElementById('product-image').value.trim() || 'images/logen.jpeg';
+    const category = document.getElementById('product-category').value;
 
-    let products = JSON.parse(localStorage.getItem('orokadi_products')) || [];
-    
-    const newProduct = {
-        id: Date.now(),
-        name: name,
-        price: price,
-        image: image,
-        category: category, // حفظ القسم باختيار الأدمن بدقة
-        status: 'available'
-    };
+    try {
+        await addDoc(collection(db, "products"), {
+            name: name,
+            price: price,
+            image: image,
+            category: category,
+            status: 'available',
+            createdAt: Date.now()
+        });
 
-    products.push(newProduct);
-    localStorage.setItem('orokadi_products', JSON.stringify(products));
-
-    alert('تم إضافة المنتج بنجاح إلى القسم المحدد! 🌸');
-    location.reload();
+        alert('تم إضافة المنتج بنجاح إلى السحابة وسيشاهده جميع العملاء فوراً! 🌸');
+        location.reload();
+    } catch (e) {
+        alert('حدث خطأ أثناء الحفظ بالسحابة: ' + e.message);
+    }
 }
 
+// جعل دالة الإضافة متاحة عالمياً في الـ HTML
+window.addNewProduct = addNewProduct;
+window.filterProducts = filterProducts;
+window.searchProducts = searchProducts;
+window.addToCart = addToCart;
+
+// تشغيل جلب البيانات فور تحميل الصفحة
 document.addEventListener('DOMContentLoaded', () => {
-    renderStoreProducts();
+    fetchProductsFromFirebase();
 });
