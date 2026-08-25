@@ -31,7 +31,11 @@ db.serialize(() => {
     });
 });
 // ... (هنا باقي الأكواد الموجودة عندك سابقاً في الملف) ...
-
+// السماح للسيرفر بقراءة مجلدات التصميم والصور (تأكدي أن أسماء المجلدات تطابق أسماءها في مشروعك)
+app.use(express.static('public')); // إذا كانت ملفاتك داخل مجلد اسمه public
+app.use('/css', express.static(__dirname + '/style.css'));       // إذا كان لديك مجلد للـ CSS
+app.use('/images', express.static(__dirname + '/images')); // إذا كان لديك مجلد للصور
+app.use('/js', express.static(__dirname + '/app.js'));         // إذا كان لديك مجلد للـ JavaScript
 // توجيه الصفحة الرئيسية للعميل
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
