@@ -30,7 +30,19 @@ db.serialize(() => {
         }
     });
 });
+// ... (هنا باقي الأكواد الموجودة عندك سابقاً في الملف) ...
 
+// توجيه الصفحة الرئيسية للعميل
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+
+// توجيه صفحة لوحة التحكم (الأدمن)
+app.get('/admin', (req, res) => {
+    res.sendFile(__dirname + '/admin.html');
+});
+
+// سطر تشغيل السيرفر (مثل app.listen) يكون في النهاية بعدهن تماماً
 // APIs
 app.get('/api/products', (req, res) => {
     db.all("SELECT * FROM products", [], (err, rows) => res.json(rows));
